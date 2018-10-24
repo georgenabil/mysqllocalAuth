@@ -4,13 +4,12 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require("method-override");
-var User = require("./models/user.js");
 
 
 
 //Auth Packages
 var session = require('express-session');
-var passport = require('passport');
+var passport = require('./config/passport-config.js');
 var MySQLStore = require('express-mysql-session')(session);
 
 

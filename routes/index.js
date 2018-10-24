@@ -3,7 +3,8 @@ var router = express.Router();
 var User = require("../models/user.js");
 var bcrypt = require('bcrypt');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+//var LocalStrategy = require('passport-local').Strategy;
+//var GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 router.get('/', function (req, res, next) {
   console.log(req.user)
@@ -67,6 +68,12 @@ router.get("/logout", (req, res) => {
 
 })
 
+router.get("/auth/google", (req, res) => {
+
+  res.send("hi google");
+
+})
+/*
 passport.serializeUser(function (id, done) {
   console.log(id + "the seizalize");
   done(null, id);  //what you put into the session 
@@ -101,6 +108,19 @@ passport.use(new LocalStrategy(
 
 );
 
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "/auth/google/redirect"
+},
+  function (accessToken, refreshToken, profile, cb) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
+
+*/
 
 
 module.exports = router;
