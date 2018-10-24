@@ -8,7 +8,6 @@ var bcrypt = require("bcrypt");
 
 
 passport.serializeUser(function (id, done) {
-    console.log(id + "the seizalize");
     done(null, id);  //what you put into the session 
 });
 
@@ -47,10 +46,31 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/redirect"
 },
     function (accessToken, refreshToken, profile, cb) {
-        User.findOrCreate({ googleId: profile.id }, function (err, user) {
-            return cb(err, user);
-        });
+        console.log(profile.id);
+        User.getUserBygoogleId(profile.id, (err, result, fields) => {
+            if (err) {
+                throw err
+            } else {
+                console.log(result);
+                if (result.length < 1) { //not found
+                    User.addUser({ username: profile.displayName, password: null, email: profile.emails[0].value, googleid: profile.id }, (err, resul) => {
+                        if (err) throw err;
+                        User.db().query("SELECT LAST_INSERT_ID() As user_id", (err, results, fields) => {
+                            if (err) throw err;
+                            console.log(results[0].user_id);
+                            return cb(err, results[0].user_id);
+                        })
+                    })
+                } else {
+                    return cb(err, result[0].id); //id as retrived from database
+                }
+
+            }
+        })
+
+
     }
+
 ));
 
 module.exports = passport;

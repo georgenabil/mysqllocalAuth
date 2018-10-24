@@ -14,14 +14,18 @@ module.exports = class User {
         return db.query("SELECT * FROM users WHERE id=?", [id], callback);
     }
 
+    static getUserBygoogleId(id, callback) {
+        return db.query("SELECT * FROM users WHERE googleid=?", [id], callback);
+    }
+
     static getUserByname(name, callback) {
         return db.query("SELECT * FROM users WHERE username=?", [name], callback);
     }
 
     static addUser(user, callback) {
 
-        return db.query("INSERT INTO users (username,password,email) VALUES(?,?,?)",
-            [user.username, user.password, user.email], callback);
+        return db.query("INSERT INTO users (username,password,email,googleId) VALUES(?,?,?,?)",
+            [user.username, user.password, user.email, user.googleid], callback);
     }
 
     static delUserByID(id, callback) {
