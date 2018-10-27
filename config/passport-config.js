@@ -3,6 +3,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
 var User = require("../models/user.js");
 var bcrypt = require("bcrypt");
+var JWTStrategy = require("passport-jwt").Strategy;
+const { ExtractJwt } = require('passport-jwt');
 
 
 
@@ -72,5 +74,24 @@ passport.use(new GoogleStrategy({
     }
 
 ));
+
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+    secretOrKey: process.env.JWT_SECERT
+}, (payload, done) => {
+
+    User.getUserById(payload.sub, (err, results, fields) => {
+        if (results.length < 1) { //not found
+            done(null, false)
+        } else {
+            done(null, results[0].id)
+        }
+    })
+})
+
+)
+
+
+
 
 module.exports = passport;
